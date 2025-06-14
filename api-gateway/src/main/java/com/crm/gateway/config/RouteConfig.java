@@ -1,6 +1,6 @@
-package com.crm.config;
+package com.crm.gateway.config;
 
-import com.crm.filters.AuthFilter;
+import com.crm.gateway.filters.AuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;

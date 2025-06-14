@@ -21,7 +21,7 @@
         <dependency>
             <groupId>com.github.APA-CRM</groupId>
             <artifactId>crm-shared-lib</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.5-SNAPSHOT</version>
         </dependency>
 
         <dependency>

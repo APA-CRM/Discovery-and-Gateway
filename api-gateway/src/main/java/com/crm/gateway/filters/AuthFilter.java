@@ -1,4 +1,4 @@
-package com.crm.filters;
+package com.crm.gateway.filters;
 
 import com.crm.sharedlib.dto.response.AuthResponse;
 import org.springframework.beans.factory.annotation.Autowired;
