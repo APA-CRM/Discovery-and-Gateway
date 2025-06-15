@@ -1,5 +1,6 @@
-package com.crm.filters;
+package com.crm.gateway.filters;
 
+import com.crm.sharedlib.dto.request.AuthorizationRequest;
 import com.crm.sharedlib.dto.response.AuthResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,16 +15,15 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import static com.crm.sharedlib.consts.CrmConstants.USER_ID_HEADER_NAME;
-import static com.crm.sharedlib.consts.CrmConstants.USER_LOGIN_HEADER_NAME;
+import static com.crm.sharedlib.consts.CrmConstants.*;
 
 @Component
-public class AuthFilter implements GatewayFilter {
+public class AuthorizeAndCheckAccessFilter implements GatewayFilter {
 
     private final WebClient webClient;
 
     @Autowired
-    public AuthFilter(
+    public AuthorizeAndCheckAccessFilter(
             WebClient.Builder webClientBuilder,
             @Value("${app.auth-url}") String authUrl
     ) {
@@ -36,10 +36,21 @@ public class AuthFilter implements GatewayFilter {
 
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
+        String organizationId = request.getHeaders().getFirst(ORGANIZATION_ID_HEADER_NAME);
+
+        String uri = request.getPath().toString();
+        String httpMethodName = request.getMethod().toString();
+
+        AuthorizationRequest authorizationRequest =
+                new AuthorizationRequest(httpMethodName, uri);
+
         return webClient
-                .get()
-                .uri("/api/auth/authorize")
+                .post()
+                .uri("/api/auth/check-access")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(authorizationRequest)
                 .header(HttpHeaders.AUTHORIZATION, authHeader)
+                .header(ORGANIZATION_ID_HEADER_NAME, organizationId)
                 .retrieve()
                 .bodyToMono(AuthResponse.class)
                 .flatMap(authResponse -> {
