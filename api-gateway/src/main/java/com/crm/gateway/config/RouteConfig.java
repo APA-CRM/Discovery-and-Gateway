@@ -31,6 +31,13 @@ public class RouteConfig {
                                 .filters(spec -> spec.filter(authFilter))
                                 .uri("lb://main-service")
                 )
+                .route("auth-service-authorize", r -> r.path(
+                                        "/api/users/me"
+                                ).and()
+                                .method(HttpMethod.GET)
+                                .filters(spec -> spec.filter(authFilter))
+                                .uri("lb://auth-service")
+                )
                 .route(
                         "main-service-check-access", r -> r.path(
                                         "/api/organizations/**"
