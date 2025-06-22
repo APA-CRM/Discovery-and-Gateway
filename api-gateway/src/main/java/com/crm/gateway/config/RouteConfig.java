@@ -32,7 +32,7 @@ public class RouteConfig {
                                 .uri("lb://main-service")
                 )
                 .route("auth-service-authorize", r -> r.path(
-                                        "/api/users/me"
+                                        "/api/users/**"
                                 ).and()
                                 .method(HttpMethod.GET)
                                 .filters(spec -> spec.filter(authFilter))
