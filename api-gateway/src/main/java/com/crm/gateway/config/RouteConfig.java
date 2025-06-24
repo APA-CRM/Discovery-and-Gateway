@@ -23,10 +23,7 @@ public class RouteConfig {
         return builder.routes()
                 .route(
                         "main-service-authorize", r -> r.path(
-                                        "/api/organizations"
-                                )
-                                .and().method(
-                                        HttpMethod.POST, HttpMethod.GET
+                                        "/api/organizations", "/api/organizations/invitations/**"
                                 )
                                 .filters(spec -> spec.filter(authFilter))
                                 .uri("lb://main-service")
@@ -40,7 +37,10 @@ public class RouteConfig {
                 )
                 .route(
                         "main-service-check-access", r -> r.path(
-                                        "/api/organizations/**"
+                                        "/api/organizations/*/users/**",
+                                    "/api/organizations/*/roles/**",
+                                    "/api/organizations/*/users/*/roles/**",
+                                    "/api/organizations/*/invitations"
                                 )
                                 .filters(spec -> spec.filter(checkAccessFilter))
                                 .uri("lb://main-service")
