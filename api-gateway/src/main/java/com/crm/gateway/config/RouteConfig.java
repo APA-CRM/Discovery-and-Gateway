@@ -30,8 +30,7 @@ public class RouteConfig {
                 )
                 .route("auth-service-authorize", r -> r.path(
                                         "/api/users/**"
-                                ).and()
-                                .method(HttpMethod.GET)
+                                )
                                 .filters(spec -> spec.filter(authFilter))
                                 .uri("lb://auth-service")
                 )
@@ -44,14 +43,6 @@ public class RouteConfig {
                                 )
                                 .filters(spec -> spec.filter(checkAccessFilter))
                                 .uri("lb://main-service")
-                )
-                .route(
-                        "auth-service-check-access", r -> r.path(
-                                        "/api/users/**",
-                                        "/api/access-control/**"
-                                )
-                                .filters(spec -> spec.filter(checkAccessFilter))
-                                .uri("lb://auth-service")
                 )
                 .route(
                         "authorization-api", r -> r.path("/api/auth/**")
