@@ -25,7 +25,7 @@ public class AuthFilter implements GatewayFilter {
     @Autowired
     public AuthFilter(
             WebClient.Builder webClientBuilder,
-            @Value("${app.auth-url}") String authUrl
+            @Value("${app.auth.url}") String authUrl
     ) {
         this.webClient = webClientBuilder.baseUrl(authUrl).build();
     }
