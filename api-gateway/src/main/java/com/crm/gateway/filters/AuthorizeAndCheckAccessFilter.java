@@ -4,7 +4,6 @@ import com.crm.sharedlib.dto.request.AuthorizationRequest;
 import com.crm.sharedlib.dto.response.AuthResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,7 +17,7 @@ import reactor.core.publisher.Mono;
 import static com.crm.sharedlib.consts.CrmConstants.*;
 
 @Component
-public class AuthorizeAndCheckAccessFilter implements GatewayFilter {
+public class AuthorizeAndCheckAccessFilter extends BaseGatewayFilter {
 
     private final WebClient webClient;
 
@@ -62,19 +61,6 @@ public class AuthorizeAndCheckAccessFilter implements GatewayFilter {
                     return chain.filter(exchange.mutate().request(httpRequest).build());
                 })
                 .onErrorResume(WebClientResponseException.class, ex -> handleWebClientError(exchange, ex));
-    }
-
-    private Mono<Void> handleWebClientError(
-            ServerWebExchange exchange,
-            WebClientResponseException e
-    ) {
-        exchange.getResponse().setStatusCode(e.getStatusCode());
-        exchange.getResponse().getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        return exchange.getResponse().writeWith(Mono.just(exchange.getResponse()
-                        .bufferFactory()
-                        .wrap(e.getResponseBodyAsByteArray())
-                )
-        );
     }
 
 }

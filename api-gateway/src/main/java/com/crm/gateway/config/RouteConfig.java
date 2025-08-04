@@ -37,11 +37,11 @@ public class RouteConfig {
                 )
                 .route(
                         "main-service-check-access", r -> r.path(
-                                    "/api/organizations/*",
+                                        "/api/organizations/*",
                                         "/api/organizations/*/users/**",
-                                    "/api/organizations/*/roles/**",
-                                    "/api/organizations/*/users/*/roles/**",
-                                    "/api/organizations/*/invitations"
+                                        "/api/organizations/*/roles/**",
+                                        "/api/organizations/*/users/*/roles/**",
+                                        "/api/organizations/*/invitations"
                                 )
                                 .filters(spec -> spec.filter(checkAccessFilter))
                                 .uri("lb://main-service")
