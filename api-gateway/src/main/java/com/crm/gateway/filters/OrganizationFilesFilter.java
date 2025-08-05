@@ -39,6 +39,9 @@ public class OrganizationFilesFilter extends BaseGatewayFilter {
         String organizationId = request.getHeaders()
                 .getFirst(CrmConstants.ORGANIZATION_ID_HEADER_NAME);
 
+        String userId = request.getHeaders()
+                .getFirst(CrmConstants.USER_ID_HEADER_NAME);
+
         if (isNull(organizationId)) {
             respondWithError(exchange, 403, new CrmErrorResponse("Organization ID not specified"));
 
@@ -55,7 +58,9 @@ public class OrganizationFilesFilter extends BaseGatewayFilter {
 
         return webClient
                 .get()
-                .uri("/api/internal/organization/%d/files/%s/check".formatted(Long.valueOf(organizationId), fileId))
+                .uri("/api/internal/organizations/%d/files/%s/check".formatted(Long.valueOf(organizationId), fileId))
+                .header(CrmConstants.ORGANIZATION_ID_HEADER_NAME, organizationId)
+                .header(CrmConstants.USER_ID_HEADER_NAME, userId)
                 .retrieve()
                 .toBodilessEntity()
                 .flatMap(resp -> chain.filter(exchange))
