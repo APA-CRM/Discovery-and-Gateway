@@ -21,7 +21,13 @@
         <dependency>
             <groupId>com.github.APA-CRM</groupId>
             <artifactId>crm-shared-lib</artifactId>
-            <version>0.0.5-SNAPSHOT</version>
+            <version>0.0.13-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

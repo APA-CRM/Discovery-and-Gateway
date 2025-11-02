@@ -21,6 +21,14 @@ public class RouteConfig {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
+                .route("notifications-service-web-sockets", r -> r
+                        .path("/ws-notifications/**")
+                        .uri("lb:ws://notification-service")
+                )
+                .route("notifications-service-open", r -> r
+                        .path("/api/test/notifications/**")
+                        .uri("lb:ws://notification-service")
+                )
                 .route(
                         "main-service-authorize", r -> r.path(
                                         "/api/organizations",
