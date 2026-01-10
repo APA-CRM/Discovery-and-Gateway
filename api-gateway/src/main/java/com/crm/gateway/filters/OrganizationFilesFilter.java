@@ -1,7 +1,7 @@
 package com.crm.gateway.filters;
 
-import com.crm.sharedlib.consts.CrmConstants;
-import com.crm.sharedlib.exception.response.CrmErrorResponse;
+import com.crm.sharedlib.core.consts.CrmHeaders;
+import com.crm.sharedlib.core.exception.response.CrmErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -37,10 +37,10 @@ public class OrganizationFilesFilter extends BaseGatewayFilter {
         ServerHttpRequest request = exchange.getRequest();
 
         String organizationId = request.getHeaders()
-                .getFirst(CrmConstants.ORGANIZATION_ID_HEADER_NAME);
+                .getFirst(CrmHeaders.ORGANIZATION_ID_HEADER_NAME);
 
         String userId = request.getHeaders()
-                .getFirst(CrmConstants.USER_ID_HEADER_NAME);
+                .getFirst(CrmHeaders.USER_ID_HEADER_NAME);
 
         if (isNull(organizationId)) {
             respondWithError(exchange, 403, new CrmErrorResponse("Organization ID not specified"));
@@ -59,8 +59,8 @@ public class OrganizationFilesFilter extends BaseGatewayFilter {
         return webClient
                 .get()
                 .uri("/api/internal/organizations/%d/files/%s/check".formatted(Long.valueOf(organizationId), fileId))
-                .header(CrmConstants.ORGANIZATION_ID_HEADER_NAME, organizationId)
-                .header(CrmConstants.USER_ID_HEADER_NAME, userId)
+                .header(CrmHeaders.ORGANIZATION_ID_HEADER_NAME, organizationId)
+                .header(CrmHeaders.USER_ID_HEADER_NAME, userId)
                 .retrieve()
                 .toBodilessEntity()
                 .flatMap(resp -> chain.filter(exchange))

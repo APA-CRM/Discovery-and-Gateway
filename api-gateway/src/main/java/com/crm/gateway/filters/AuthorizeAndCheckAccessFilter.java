@@ -1,7 +1,7 @@
 package com.crm.gateway.filters;
 
-import com.crm.sharedlib.dto.request.AuthorizationRequest;
-import com.crm.sharedlib.dto.response.AuthResponse;
+import com.crm.sharedlib.core.dto.request.AuthorizationRequest;
+import com.crm.sharedlib.core.dto.response.AuthResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -14,7 +14,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import static com.crm.sharedlib.consts.CrmConstants.*;
+import static com.crm.sharedlib.core.consts.CrmHeaders.*;
 
 @Component
 public class AuthorizeAndCheckAccessFilter extends BaseGatewayFilter {

@@ -1,6 +1,6 @@
 package com.crm.gateway.filters;
 
-import com.crm.sharedlib.exception.response.CrmErrorResponse;
+import com.crm.sharedlib.core.exception.response.CrmErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.cloud.gateway.filter.GatewayFilter;

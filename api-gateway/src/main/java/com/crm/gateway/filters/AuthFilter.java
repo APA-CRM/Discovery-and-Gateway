@@ -1,6 +1,6 @@
 package com.crm.gateway.filters;
 
-import com.crm.sharedlib.dto.response.AuthResponse;
+import com.crm.sharedlib.core.dto.response.AuthResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -12,8 +12,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import static com.crm.sharedlib.consts.CrmConstants.USER_ID_HEADER_NAME;
-import static com.crm.sharedlib.consts.CrmConstants.USER_LOGIN_HEADER_NAME;
+import static com.crm.sharedlib.core.consts.CrmHeaders.USER_ID_HEADER_NAME;
+import static com.crm.sharedlib.core.consts.CrmHeaders.USER_LOGIN_HEADER_NAME;
 
 @Component
 public class AuthFilter extends BaseGatewayFilter {
