@@ -27,9 +27,9 @@ public class OrganizationFilesFilter extends BaseGatewayFilter {
     @Autowired
     public OrganizationFilesFilter(
             WebClient.Builder webClientBuilder,
-            @Value("${app.main.url}") String mainUrl
+            @Value("${app.clients.main-service.name}") String mainServiceName
     ) {
-        this.webClient = webClientBuilder.baseUrl(mainUrl).build();
+        this.webClient = webClientBuilder.baseUrl("lb://" + mainServiceName).build();
     }
 
     @Override

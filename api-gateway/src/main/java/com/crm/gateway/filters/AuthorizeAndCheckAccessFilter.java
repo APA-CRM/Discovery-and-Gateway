@@ -24,9 +24,9 @@ public class AuthorizeAndCheckAccessFilter extends BaseGatewayFilter {
     @Autowired
     public AuthorizeAndCheckAccessFilter(
             WebClient.Builder webClientBuilder,
-            @Value("${app.auth.url}") String authUrl
+            @Value("${app.clients.auth-service.name}") String authServiceName
     ) {
-        this.webClient = webClientBuilder.baseUrl(authUrl).build();
+        this.webClient = webClientBuilder.baseUrl("lb://" + authServiceName).build();
     }
 
     @Override
