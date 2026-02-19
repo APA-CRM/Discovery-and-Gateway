@@ -36,7 +36,7 @@ public class AuthFilter extends BaseGatewayFilter {
 
         return webClient
                 .get()
-                .uri("/api/auth/authorize")
+                .uri("/api/internal/auth/authorize")
                 .header(HttpHeaders.AUTHORIZATION, authHeader)
                 .retrieve()
                 .bodyToMono(AuthResponse.class)

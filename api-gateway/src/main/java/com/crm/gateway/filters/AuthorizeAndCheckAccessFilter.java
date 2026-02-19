@@ -45,7 +45,7 @@ public class AuthorizeAndCheckAccessFilter extends BaseGatewayFilter {
 
         return webClient
                 .post()
-                .uri("/api/auth/check-access")
+                .uri("/api/internal/auth/check-access")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(authorizationRequest)
                 .header(HttpHeaders.AUTHORIZATION, authHeader)
