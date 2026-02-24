@@ -44,7 +44,7 @@ public class RouteConfig {
                                 .uri("lb://" + mainServiceName)
                 )
                 .route("auth-service-authorize", r -> r.path(
-                                        "/api/users/**"
+                                "/api/users/**"
                                 )
                                 .filters(spec -> spec.filter(authFilter))
                                 .uri("lb://" + authServiceName)
@@ -76,7 +76,9 @@ public class RouteConfig {
                                 .uri("lb://" + fileServiceName)
                 )
                 .route(
-                        "authorization-api", r -> r.path("/api/auth/**")
+                        "authorization-api", r -> r.path(
+                                "/api/auth/**", "/api/restore-password-request/**"
+                                )
                                 .uri("lb://" + authServiceName)
                 )
                 .build();
