@@ -1,7 +1,10 @@
 package com.crm.gateway.filters;
 
+import com.crm.gateway.utils.JwtUtils;
 import com.crm.sharedlib.core.dto.request.AuthorizationRequest;
+import com.crm.sharedlib.core.dto.request.AuthorizationWithUriAndHttpMethodRequest;
 import com.crm.sharedlib.core.dto.response.AuthResponse;
+import com.crm.sharedlib.core.exception.response.CrmErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -13,6 +16,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 import static com.crm.sharedlib.core.consts.CrmHeaders.*;
 
@@ -34,18 +39,29 @@ public class AuthorizeAndCheckAccessFilter extends BaseGatewayFilter {
         ServerHttpRequest request = exchange.getRequest();
 
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-
         String organizationId = request.getHeaders().getFirst(ORGANIZATION_ID_HEADER_NAME);
+        String userAgent = request.getHeaders().getFirst(HttpHeaders.USER_AGENT);
+
+        Optional<String> tokenOptional = JwtUtils.getJwtTokenFromAuthorizationHeader(authHeader);
+
+        if (tokenOptional.isEmpty()) {
+            return respondWithError(exchange, 401, new CrmErrorResponse("Unauthorized"));
+        }
 
         String uri = request.getPath().toString();
         String httpMethodName = request.getMethod().toString();
 
-        AuthorizationRequest authorizationRequest =
-                new AuthorizationRequest(httpMethodName, uri);
+        AuthorizationWithUriAndHttpMethodRequest authorizationRequest =
+                new AuthorizationWithUriAndHttpMethodRequest();
+
+        authorizationRequest.setUri(uri);
+        authorizationRequest.setHttpMethodName(httpMethodName);
+        authorizationRequest.setAccessToken(tokenOptional.get());
+        authorizationRequest.setUserAgent(userAgent);
 
         return webClient
                 .post()
-                .uri("/api/internal/auth/check-access")
+                .uri("/api/internal/auth/authorize-and-check-access")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(authorizationRequest)
                 .header(HttpHeaders.AUTHORIZATION, authHeader)
