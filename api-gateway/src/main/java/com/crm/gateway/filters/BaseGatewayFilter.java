@@ -29,8 +29,8 @@ public abstract class BaseGatewayFilter implements GatewayFilter {
     }
 
     @SneakyThrows
-    protected Mono<Void> respondWithError(ServerWebExchange exchange, int httpStatus, CrmErrorResponse body) {
-        exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(httpStatus));
+    protected Mono<Void> respondWithError(ServerWebExchange exchange, HttpStatusCode httpStatus, CrmErrorResponse body) {
+        exchange.getResponse().setStatusCode(httpStatus);
         exchange.getResponse().getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         return exchange.getResponse().writeWith(Mono.just(exchange.getResponse()
                         .bufferFactory()

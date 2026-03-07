@@ -1,7 +1,6 @@
 package com.crm.gateway.filters;
 
 import com.crm.gateway.utils.JwtUtils;
-import com.crm.sharedlib.core.dto.request.AuthorizationRequest;
 import com.crm.sharedlib.core.dto.request.AuthorizationWithUriAndHttpMethodRequest;
 import com.crm.sharedlib.core.dto.response.AuthResponse;
 import com.crm.sharedlib.core.exception.response.CrmErrorResponse;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
@@ -45,7 +45,7 @@ public class AuthorizeAndCheckAccessFilter extends BaseGatewayFilter {
         Optional<String> tokenOptional = JwtUtils.getJwtTokenFromAuthorizationHeader(authHeader);
 
         if (tokenOptional.isEmpty()) {
-            return respondWithError(exchange, 401, new CrmErrorResponse("Unauthorized"));
+            return respondWithError(exchange, HttpStatus.UNAUTHORIZED, new CrmErrorResponse("Unauthorized"));
         }
 
         String uri = request.getPath().toString();

@@ -5,6 +5,7 @@ import com.crm.sharedlib.core.exception.response.CrmErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -43,7 +44,7 @@ public class OrganizationFilesFilter extends BaseGatewayFilter {
                 .getFirst(CrmHeaders.USER_ID_HEADER_NAME);
 
         if (isNull(organizationId)) {
-            respondWithError(exchange, 403, new CrmErrorResponse("Organization ID not specified"));
+            respondWithError(exchange, HttpStatus.FORBIDDEN, new CrmErrorResponse("Organization ID not specified"));
 
             return chain.filter(exchange);
         }
@@ -51,7 +52,7 @@ public class OrganizationFilesFilter extends BaseGatewayFilter {
         UUID fileId = extractFileIdFromRequest(exchange);
 
         if (isNull(fileId)) {
-            respondWithError(exchange, 403, new CrmErrorResponse("File ID not specified"));
+            respondWithError(exchange, HttpStatus.FORBIDDEN, new CrmErrorResponse("File ID not specified"));
 
             return chain.filter(exchange);
         }
