@@ -44,23 +44,17 @@ public class OrganizationFilesFilter extends BaseGatewayFilter {
                 .getFirst(CrmHeaders.USER_ID_HEADER_NAME);
 
         if (isNull(userId)) {
-            respondWithError(exchange, HttpStatus.FORBIDDEN, new CrmErrorResponse("User ID not specified"));
-
-            return chain.filter(exchange);
+            return respondWithError(exchange, HttpStatus.FORBIDDEN, new CrmErrorResponse("User ID not specified"));
         }
 
         if (isNull(organizationId)) {
-            respondWithError(exchange, HttpStatus.FORBIDDEN, new CrmErrorResponse("Organization ID not specified"));
-
-            return chain.filter(exchange);
+            return respondWithError(exchange, HttpStatus.FORBIDDEN, new CrmErrorResponse("Organization ID not specified"));
         }
 
         UUID fileId = extractFileIdFromRequest(exchange);
 
         if (isNull(fileId)) {
-            respondWithError(exchange, HttpStatus.FORBIDDEN, new CrmErrorResponse("File ID not specified"));
-
-            return chain.filter(exchange);
+            return respondWithError(exchange, HttpStatus.FORBIDDEN, new CrmErrorResponse("File ID not specified"));
         }
 
         return mainServiceClient.checkFileExistenceInOrganization(
