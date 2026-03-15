@@ -44,7 +44,7 @@ public class RouteConfig {
                                 .uri("lb://" + mainServiceName)
                 )
                 .route("auth-service-authorize", r -> r.path(
-                                "/api/users/**"
+                                        "/api/users/**"
                                 )
                                 .filters(spec -> spec.filter(authFilter))
                                 .uri("lb://" + authServiceName)
@@ -77,7 +77,7 @@ public class RouteConfig {
                 )
                 .route(
                         "authorization-api", r -> r.path(
-                                "/api/auth/**", "/api/restore-password-request/**"
+                                        "/api/auth/**", "/api/restore-password-request/**"
                                 )
                                 .uri("lb://" + authServiceName)
                 )

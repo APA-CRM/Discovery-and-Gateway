@@ -1,13 +1,14 @@
 package com.crm.gateway.filters;
 
+import com.crm.gateway.clients.MainServiceClient;
+import com.crm.gateway.service.JwtService;
 import com.crm.sharedlib.core.consts.CrmHeaders;
 import com.crm.sharedlib.core.exception.response.CrmErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -22,14 +23,14 @@ import static java.util.Objects.isNull;
 public class OrganizationFilesFilter extends BaseGatewayFilter {
 
     private static final Pattern PATTERN = Pattern.compile("^/api/files/(?<fileId>[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12})(/.*)?$");
-    private final WebClient webClient;
+    private final MainServiceClient mainServiceClient;
 
     @Autowired
     public OrganizationFilesFilter(
-            WebClient.Builder webClientBuilder,
-            @Value("${app.clients.main-service.name}") String mainServiceName
+            JwtService jwtService, MainServiceClient mainServiceClient
     ) {
-        this.webClient = webClientBuilder.baseUrl("lb://" + mainServiceName).build();
+        super(jwtService);
+        this.mainServiceClient = mainServiceClient;
     }
 
     @Override
@@ -42,27 +43,23 @@ public class OrganizationFilesFilter extends BaseGatewayFilter {
         String userId = request.getHeaders()
                 .getFirst(CrmHeaders.USER_ID_HEADER_NAME);
 
-        if (isNull(organizationId)) {
-            respondWithError(exchange, 403, new CrmErrorResponse("Organization ID not specified"));
+        if (isNull(userId)) {
+            return respondWithError(exchange, HttpStatus.FORBIDDEN, new CrmErrorResponse("User ID not specified"));
+        }
 
-            return chain.filter(exchange);
+        if (isNull(organizationId)) {
+            return respondWithError(exchange, HttpStatus.FORBIDDEN, new CrmErrorResponse("Organization ID not specified"));
         }
 
         UUID fileId = extractFileIdFromRequest(exchange);
 
         if (isNull(fileId)) {
-            respondWithError(exchange, 403, new CrmErrorResponse("File ID not specified"));
-
-            return chain.filter(exchange);
+            return respondWithError(exchange, HttpStatus.FORBIDDEN, new CrmErrorResponse("File ID not specified"));
         }
 
-        return webClient
-                .get()
-                .uri("/api/internal/organizations/%d/files/%s/check".formatted(Long.valueOf(organizationId), fileId))
-                .header(CrmHeaders.ORGANIZATION_ID_HEADER_NAME, organizationId)
-                .header(CrmHeaders.USER_ID_HEADER_NAME, userId)
-                .retrieve()
-                .toBodilessEntity()
+        return mainServiceClient.checkFileExistenceInOrganization(
+                        Long.valueOf(organizationId), fileId, Long.valueOf(userId)
+                )
                 .flatMap(resp -> chain.filter(exchange))
                 .onErrorResume(WebClientResponseException.class, ex -> handleWebClientError(exchange, ex));
     }
