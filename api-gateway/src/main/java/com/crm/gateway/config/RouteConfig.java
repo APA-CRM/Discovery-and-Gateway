@@ -64,14 +64,14 @@ public class RouteConfig {
                 .route(
                         "file-service-check-access-and-file-existence", r -> r.path(
                                         "/api/files/**"
-                                ).and().method(HttpMethod.GET, HttpMethod.POST, HttpMethod.PATCH, HttpMethod.OPTIONS)
+                                ).and().method(HttpMethod.GET,  HttpMethod.PATCH, HttpMethod.OPTIONS)
                                 .filters(spec -> spec.filters(checkAccessFilter, organizationFilesFilter))
                                 .uri("lb://" + fileServiceName)
                 )
                 .route(
                         "file-service-check-access", r -> r.path(
                                         "/api/files/**"
-                                ).and().method(HttpMethod.DELETE, HttpMethod.OPTIONS)
+                                ).and().method(HttpMethod.DELETE, HttpMethod.POST, HttpMethod.OPTIONS)
                                 .filters(spec -> spec.filters(checkAccessFilter))
                                 .uri("lb://" + fileServiceName)
                 )
