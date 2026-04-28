@@ -1,6 +1,6 @@
 package com.crm.gateway.filters;
 
-import com.crm.gateway.clients.MainServiceClient;
+import com.crm.gateway.clients.OrganizationFilesClient;
 import com.crm.gateway.service.UserPermissionService;
 import com.crm.sharedlib.core.enums.Action;
 import com.crm.sharedlib.core.enums.Resource;
@@ -35,7 +35,7 @@ class OrganizationFilesFilterTest extends BaseGatewayFilterIntegrationTest {
     @MockitoBean
     private UserPermissionService userPermissionService;
     @MockitoBean
-    private MainServiceClient mainServiceClient;
+    private OrganizationFilesClient organizationFilesClient;
 
     @Test
     @DisplayName("Should return 403 when File ID is missing")
@@ -89,7 +89,7 @@ class OrganizationFilesFilterTest extends BaseGatewayFilterIntegrationTest {
         Mockito.when(userPermissionService.getUserPermission(Mockito.any(), Mockito.any()))
                 .thenReturn(Mono.just(userPermission));
 
-        Mockito.when(mainServiceClient.checkFileExistenceInOrganization(Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(organizationFilesClient.checkFileExistenceInOrganization(Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(Mono.just(ResponseEntity.of(Optional.empty())));
 
         wireMock.stubFor(get(urlEqualTo("/api/files/%s".formatted(fileId)))

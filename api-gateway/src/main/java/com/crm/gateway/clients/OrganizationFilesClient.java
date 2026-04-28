@@ -10,11 +10,14 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Component
-public class MainServiceClient {
+public class OrganizationFilesClient {
+
+    protected static final String API_INTERNAL_ORGANIZATIONS_ORGANIZATION_ID_FILES_FILE_ID_CHECK
+            = "/api/internal/organizations/{organizationId}/files/{fileId}/check";
 
     private final WebClient webClient;
 
-    public MainServiceClient(@Qualifier("mainServiceWebClient") WebClient webClient) {
+    public OrganizationFilesClient(@Qualifier("mainServiceWebClient") WebClient webClient) {
         this.webClient = webClient;
     }
 
@@ -23,7 +26,7 @@ public class MainServiceClient {
     ) {
         return webClient
                 .get()
-                .uri("/api/internal/organizations/{organizationId}/files/{fileId}/check", organizationId, fileId)
+                .uri(API_INTERNAL_ORGANIZATIONS_ORGANIZATION_ID_FILES_FILE_ID_CHECK, organizationId, fileId)
                 .header(CrmHeaders.ORGANIZATION_ID_HEADER_NAME, organizationId.toString())
                 .header(CrmHeaders.USER_ID_HEADER_NAME, userId.toString())
                 .retrieve()

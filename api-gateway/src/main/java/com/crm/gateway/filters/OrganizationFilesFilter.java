@@ -1,6 +1,6 @@
 package com.crm.gateway.filters;
 
-import com.crm.gateway.clients.MainServiceClient;
+import com.crm.gateway.clients.OrganizationFilesClient;
 import com.crm.gateway.service.JwtService;
 import com.crm.sharedlib.core.consts.CrmHeaders;
 import com.crm.sharedlib.core.exception.response.CrmErrorResponse;
@@ -23,14 +23,14 @@ import static java.util.Objects.isNull;
 public class OrganizationFilesFilter extends BaseGatewayFilter {
 
     private static final Pattern PATTERN = Pattern.compile("^/api/files/(?<fileId>[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12})(/.*)?$");
-    private final MainServiceClient mainServiceClient;
+    private final OrganizationFilesClient organizationFilesClient;
 
     @Autowired
     public OrganizationFilesFilter(
-            JwtService jwtService, MainServiceClient mainServiceClient
+            JwtService jwtService, OrganizationFilesClient organizationFilesClient
     ) {
         super(jwtService);
-        this.mainServiceClient = mainServiceClient;
+        this.organizationFilesClient = organizationFilesClient;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class OrganizationFilesFilter extends BaseGatewayFilter {
             return respondWithError(exchange, HttpStatus.FORBIDDEN, new CrmErrorResponse("File ID not specified"));
         }
 
-        return mainServiceClient.checkFileExistenceInOrganization(
+        return organizationFilesClient.checkFileExistenceInOrganization(
                         Long.valueOf(organizationId), fileId, Long.valueOf(userId)
                 )
                 .flatMap(resp -> chain.filter(exchange))
