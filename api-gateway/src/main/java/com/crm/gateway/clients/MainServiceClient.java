@@ -1,8 +1,7 @@
 package com.crm.gateway.clients;
 
 import com.crm.sharedlib.core.consts.CrmHeaders;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,12 +14,8 @@ public class MainServiceClient {
 
     private final WebClient webClient;
 
-    @Autowired
-    public MainServiceClient(
-            WebClient.Builder webClientBuilder,
-            @Value("${app.clients.main-service.name}") String mainServiceName
-    ) {
-        this.webClient = webClientBuilder.baseUrl("lb://" + mainServiceName).build();
+    public MainServiceClient(@Qualifier("mainServiceWebClient") WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public Mono<ResponseEntity<Void>> checkFileExistenceInOrganization(
