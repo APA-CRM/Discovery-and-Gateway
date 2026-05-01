@@ -10,6 +10,7 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface TasksMapper {
 
+    @Mapping(target = "id", source = "taskResponse.id")
     @Mapping(target = "assignedTo", source = "assignedTo")
     @Mapping(target = "createdBy", source = "createdBy")
     TaskWithUsersResponse toTaskWithUsersResponse(

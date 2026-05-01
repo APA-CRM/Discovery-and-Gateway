@@ -3,10 +3,12 @@ package com.crm.gateway.composite.clients;
 import com.crm.gateway.composite.auth.UserDetails;
 import com.crm.gateway.composite.dtos.request.TaskFilterRequest;
 import com.crm.gateway.composite.dtos.response.tasks.TaskResponse;
+import com.crm.gateway.composite.utils.FilterRequestToMapConvertor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -30,8 +32,14 @@ public class TasksClient {
     public Mono<PagedModel<TaskResponse>> filterTasks(
             UserDetails userDetails, TaskFilterRequest request
     ) {
+        MultiValueMap<String, String> map = FilterRequestToMapConvertor.convert(request);
+
         return webClient.get()
-                .uri(TASKS_FILTER, userDetails.organizationId())
+                .uri(uriBuilder -> uriBuilder
+                        .path(TASKS_FILTER)
+                        .queryParams(map)
+                        .build(userDetails.organizationId())
+                )
                 .header(USER_ID_HEADER_NAME, userDetails.userId().toString())
                 .header(USER_PERMISSIONS_HEADER_NAME, userDetails.permissions())
                 .retrieve()
