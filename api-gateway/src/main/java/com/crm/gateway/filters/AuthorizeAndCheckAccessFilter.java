@@ -2,8 +2,8 @@ package com.crm.gateway.filters;
 
 import com.crm.gateway.service.JwtService;
 import com.crm.gateway.service.UserPermissionService;
+import com.crm.gateway.utils.OrganizationIdExtractor;
 import com.crm.sharedlib.core.exception.response.CrmErrorResponse;
-import com.crm.sharedlib.core.utils.OrganizationIdExtractor;
 import com.crm.sharedlib.rbac.dto.JwtPayload;
 import com.crm.sharedlib.rbac.utils.UserPermissionHeaderSerializer;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
