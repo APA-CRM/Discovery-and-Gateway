@@ -8,14 +8,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
-    private static final String LOAD_BALANCER_URL_PREFIX = "lb://";
+    private static final String HTTP_PREFIX = "http://";
 
     @Bean
     public WebClient authServiceWebClient(
             WebClient.Builder builder,
             @Value("${app.clients.auth-service.name}") String authServiceName
     ) {
-        return builder.baseUrl(LOAD_BALANCER_URL_PREFIX + authServiceName).build();
+        return builder.baseUrl(HTTP_PREFIX + authServiceName).build();
     }
 
     @Bean
@@ -23,7 +23,7 @@ public class WebClientConfig {
             WebClient.Builder builder,
             @Value("${app.clients.main-service.name}") String mainServiceName
     ) {
-        return builder.baseUrl(LOAD_BALANCER_URL_PREFIX + mainServiceName).build();
+        return builder.baseUrl(HTTP_PREFIX + mainServiceName).build();
     }
 
 }

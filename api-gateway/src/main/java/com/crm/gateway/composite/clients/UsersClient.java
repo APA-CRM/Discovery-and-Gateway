@@ -11,7 +11,7 @@ import java.util.Collection;
 @Component
 public class UsersClient {
 
-    protected static final String INTERNAL_USERS = "/api/internal/users";
+    private static final String INTERNAL_USERS = "/api/internal/users";
 
     private static final String USER_ID_QUERY_PARAM_NAME = "userId";
 
@@ -23,8 +23,10 @@ public class UsersClient {
 
     public Flux<UserLightResponse> getUsersByIds(Collection<Long> usersIds) {
         return webClient.get()
-                .uri(INTERNAL_USERS)
-                .attribute(USER_ID_QUERY_PARAM_NAME, usersIds)
+                .uri(INTERNAL_USERS, uriBuilder -> uriBuilder
+                        .queryParam(USER_ID_QUERY_PARAM_NAME, usersIds)
+                        .build()
+                )
                 .retrieve()
                 .bodyToFlux(UserLightResponse.class);
     }

@@ -48,7 +48,7 @@ public class TasksComposite {
                                         ))
                                         .collect(Collectors.toList());
 
-                                return new PagedResponse<>(combinedList, pagedTasks.getMetadata());
+                                return new PagedResponse<>(combinedList, pagedTasks.getPage());
                             });
                 });
     }

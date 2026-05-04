@@ -35,6 +35,11 @@ public class RouteConfig {
                         .path("/ws-notifications/**")
                         .uri("lb:ws://" + notificationServiceName)
                 )
+                .route("composite-api-authorize-and-check-access",
+                        r -> r.path("/api/composite/**")
+                                .filters(spec -> spec.filter(checkAccessFilter))
+                                .uri("forward:/")
+                )
                 .route(
                         "main-service-authorize", r -> r.path(
                                         "/api/organizations",
@@ -64,7 +69,7 @@ public class RouteConfig {
                 .route(
                         "file-service-check-access-and-file-existence", r -> r.path(
                                         "/api/files/**"
-                                ).and().method(HttpMethod.GET,  HttpMethod.PATCH, HttpMethod.OPTIONS)
+                                ).and().method(HttpMethod.GET, HttpMethod.PATCH, HttpMethod.OPTIONS)
                                 .filters(spec -> spec.filters(checkAccessFilter, organizationFilesFilter))
                                 .uri("lb://" + fileServiceName)
                 )

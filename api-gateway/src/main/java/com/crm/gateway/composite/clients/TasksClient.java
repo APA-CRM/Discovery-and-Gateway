@@ -2,11 +2,11 @@ package com.crm.gateway.composite.clients;
 
 import com.crm.gateway.composite.auth.UserDetails;
 import com.crm.gateway.composite.dtos.request.TaskFilterRequest;
+import com.crm.gateway.composite.dtos.response.PagedResponse;
 import com.crm.gateway.composite.dtos.response.tasks.TaskResponse;
 import com.crm.gateway.composite.utils.FilterRequestToMapConvertor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -20,8 +20,8 @@ import static com.crm.sharedlib.core.consts.CrmHeaders.USER_PERMISSIONS_HEADER_N
 @Component
 public class TasksClient {
 
-    protected static final String TASKS_FILTER = "/api/organizations/{organizationId}/tasks/filter";
-    protected static final String TASKS_TASK_ID = "/api/organizations/{organizationId}/tasks/{taskId}";
+    private static final String TASKS_FILTER = "/api/organizations/{organizationId}/tasks/filter";
+    private static final String TASKS_TASK_ID = "/api/organizations/{organizationId}/tasks/{taskId}";
 
     private final WebClient webClient;
 
@@ -29,14 +29,13 @@ public class TasksClient {
         this.webClient = webClient;
     }
 
-    public Mono<PagedModel<TaskResponse>> filterTasks(
+    public Mono<PagedResponse<TaskResponse>> filterTasks(
             UserDetails userDetails, TaskFilterRequest request
     ) {
         MultiValueMap<String, String> map = FilterRequestToMapConvertor.convert(request);
 
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(TASKS_FILTER)
+                .uri(TASKS_FILTER, uriBuilder -> uriBuilder
                         .queryParams(map)
                         .build(userDetails.organizationId())
                 )
