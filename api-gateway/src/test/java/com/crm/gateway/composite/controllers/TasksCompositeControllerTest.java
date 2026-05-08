@@ -264,7 +264,7 @@ class TasksCompositeControllerTest extends BaseGatewayFilterIntegrationTest {
                 .withHeader(USER_ID_HEADER_NAME, equalTo(String.valueOf(userId)))
                 .withHeader(USER_PERMISSIONS_HEADER_NAME, equalTo(userPermissionString))
                 .willReturn(aResponse()
-                        .withStatus(201)
+                        .withStatus(200)
                         .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .withBody(objectMapper.writeValueAsString(taskResponse))));
 
@@ -293,7 +293,7 @@ class TasksCompositeControllerTest extends BaseGatewayFilterIntegrationTest {
                 .then()
                 .log().all()
                 .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
+                .statusCode(HttpStatus.OK.value())
                 .body("id", is(taskId.toString()))
                 .body("title", is(taskResponse.getTitle()))
                 .body("assignedTo", notNullValue())
