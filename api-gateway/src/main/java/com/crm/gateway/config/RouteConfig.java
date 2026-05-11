@@ -35,11 +35,6 @@ public class RouteConfig {
                         .path("/ws-notifications/**")
                         .uri("lb:ws://" + notificationServiceName)
                 )
-                .route("composite-api-authorize-and-check-access",
-                        r -> r.path("/api/composite/**")
-                                .filters(spec -> spec.filter(checkAccessFilter))
-                                .uri("forward:/")
-                )
                 .route(
                         "main-service-authorize", r -> r.path(
                                         "/api/organizations",
@@ -61,7 +56,8 @@ public class RouteConfig {
                                         "/api/organizations/*/roles/**",
                                         "/api/organizations/*/users/*/roles/**",
                                         "/api/organizations/*/invitations",
-                                        "/api/organizations/*/files/**"
+                                        "/api/organizations/*/files/**",
+                                        "/api/organizations/*/tasks/**"
                                 )
                                 .filters(spec -> spec.filter(checkAccessFilter))
                                 .uri("lb://" + mainServiceName)

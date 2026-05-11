@@ -1,6 +1,5 @@
 package com.crm.gateway.composite;
 
-import com.crm.gateway.composite.auth.UserDetails;
 import com.crm.gateway.composite.clients.TasksClient;
 import com.crm.gateway.composite.clients.UsersClient;
 import com.crm.gateway.composite.dtos.request.TaskFilterRequest;
@@ -10,6 +9,7 @@ import com.crm.gateway.composite.dtos.response.tasks.TaskResponse;
 import com.crm.gateway.composite.dtos.response.tasks.TaskWithUsersResponse;
 import com.crm.gateway.composite.dtos.response.users.UserLightResponse;
 import com.crm.gateway.composite.mappers.TasksMapper;
+import com.crm.gateway.composite.service.UserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -29,12 +29,15 @@ public class TasksComposite {
     private final TasksClient tasksClient;
     private final UsersClient usersClient;
 
+    private final UserDetailsService userDetailsService;
+
     private final TasksMapper tasksMapper;
 
     public Mono<PagedResponse<TaskWithUsersResponse>> filterTasks(
-            UserDetails userDetails, TaskFilterRequest request
+            Long organizationId, String authHeader, TaskFilterRequest request
     ) {
-        return tasksClient.filterTasks(userDetails, request)
+        return userDetailsService.getUserDetails(authHeader, organizationId)
+                .flatMap(userDetails -> tasksClient.filterTasks(userDetails, request))
                 .flatMap(pagedTasks -> {
                     Set<Long> usersIds = pagedTasks.getContent().stream()
                             .flatMap(task -> Stream.of(task.getAssignedTo(), task.getCreatedBy()))
@@ -56,25 +59,30 @@ public class TasksComposite {
                 });
     }
 
-    public Mono<TaskWithUsersResponse> getTask(UUID taskId, UserDetails userDetails) {
-        return tasksClient.getTask(taskId, userDetails)
+    public Mono<TaskWithUsersResponse> getTask(UUID taskId, Long organizationId, String authHeader) {
+        return userDetailsService.getUserDetails(authHeader, organizationId)
+                .flatMap(userDetails -> tasksClient.getTask(taskId, userDetails))
                 .flatMap(this::addUsersToTask);
     }
 
-    public Mono<TaskWithUsersResponse> createTask(TaskRequest request, UserDetails userDetails) {
-        return tasksClient.createTask(request, userDetails)
+    public Mono<TaskWithUsersResponse> createTask(TaskRequest request, Long organizationId, String authHeader) {
+        return userDetailsService.getUserDetails(authHeader, organizationId)
+                .flatMap(userDetails -> tasksClient.createTask(request, userDetails))
                 .flatMap(this::addUsersToTask);
     }
 
     public Mono<TaskWithUsersResponse> updateTask(
-            UUID taskId, TaskRequest request, UserDetails userDetails
+            UUID taskId, TaskRequest request,
+            Long organizationId, String authHeader
     ) {
-        return tasksClient.updateTask(taskId, request, userDetails)
+        return userDetailsService.getUserDetails(authHeader, organizationId)
+                .flatMap(userDetails -> tasksClient.updateTask(taskId, request, userDetails))
                 .flatMap(this::addUsersToTask);
     }
 
-    public Mono<ResponseEntity<Void>> deleteTask(UUID taskId, UserDetails userDetails) {
-        return tasksClient.deleteTask(taskId, userDetails);
+    public Mono<ResponseEntity<Void>> deleteTask(UUID taskId, Long organizationId, String authHeader) {
+        return userDetailsService.getUserDetails(authHeader, organizationId)
+                .flatMap(userDetails -> tasksClient.deleteTask(taskId, userDetails));
     }
 
     private Mono<TaskWithUsersResponse> addUsersToTask(TaskResponse task) {
