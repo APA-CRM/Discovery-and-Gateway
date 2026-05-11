@@ -5,10 +5,8 @@ import com.crm.gateway.composite.dtos.response.PageMetadata;
 import com.crm.gateway.composite.dtos.response.PagedResponse;
 import com.crm.gateway.composite.dtos.response.tasks.TaskResponse;
 import com.crm.gateway.composite.dtos.response.users.UserLightResponse;
-import com.crm.gateway.filters.AuthFilter;
-import com.crm.gateway.filters.AuthorizeAndCheckAccessFilter;
 import com.crm.gateway.filters.BaseGatewayFilterIntegrationTest;
-import com.crm.gateway.filters.OrganizationFilesFilter;
+import com.crm.gateway.service.UserPermissionService;
 import com.crm.sharedlib.core.enums.Action;
 import com.crm.sharedlib.core.enums.Resource;
 import com.crm.sharedlib.core.exception.response.CrmErrorResponse;
@@ -20,14 +18,11 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,18 +34,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 class TasksCompositeControllerTest extends BaseGatewayFilterIntegrationTest {
 
-    @Autowired
-    private List<GatewayFilter> gatewayFilters;
-
     @MockitoBean
-    private AuthFilter authFilter;
-    @MockitoBean
-    private AuthorizeAndCheckAccessFilter accessFilter;
-    @MockitoBean
-    private OrganizationFilesFilter organizationFilesFilter;
+    private UserPermissionService userPermissionService;
 
     @Test
     @DisplayName("Get task with users expected success")
@@ -96,11 +85,12 @@ class TasksCompositeControllerTest extends BaseGatewayFilterIntegrationTest {
                         .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .withBody(objectMapper.writeValueAsString(List.of(userResponse)))));
 
-        applyDefaultBehaviorToFilter(gatewayFilters);
+        Mockito.when(userPermissionService.getUserPermission(Mockito.any(), Mockito.any()))
+                .thenReturn(Mono.just(userPermission));
 
         given()
                 .contentType(ContentType.JSON)
-                .header(USER_ID_HEADER_NAME, userId)
+                .header(AUTHORIZATION, "Bearer " + generateToken(userId, "login"))
                 .header(USER_PERMISSIONS_HEADER_NAME, userPermissionString)
                 .when()
                 .get("/api/composite/organizations/{organizationId}/tasks/{taskId}", organizationId, taskId)
@@ -141,11 +131,12 @@ class TasksCompositeControllerTest extends BaseGatewayFilterIntegrationTest {
                         .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .withBody(objectMapper.writeValueAsString(response))));
 
-        applyDefaultBehaviorToFilter(gatewayFilters);
+        Mockito.when(userPermissionService.getUserPermission(Mockito.any(), Mockito.any()))
+                .thenReturn(Mono.just(userPermission));
 
         given()
                 .contentType(ContentType.JSON)
-                .header(USER_ID_HEADER_NAME, userId)
+                .header(AUTHORIZATION, "Bearer " + generateToken(userId, "login"))
                 .header(USER_PERMISSIONS_HEADER_NAME, userPermissionString)
                 .when()
                 .get("/api/composite/organizations/{organizationId}/tasks/{taskId}", organizationId, taskId)
@@ -210,11 +201,12 @@ class TasksCompositeControllerTest extends BaseGatewayFilterIntegrationTest {
                         .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .withBody(objectMapper.writeValueAsString(List.of(userResponse)))));
 
-        applyDefaultBehaviorToFilter(gatewayFilters);
+        Mockito.when(userPermissionService.getUserPermission(Mockito.any(), Mockito.any()))
+                .thenReturn(Mono.just(userPermission));
 
         given()
                 .contentType(ContentType.JSON)
-                .header(USER_ID_HEADER_NAME, userId)
+                .header(AUTHORIZATION, "Bearer " + generateToken(userId, "login"))
                 .header(USER_PERMISSIONS_HEADER_NAME, userPermissionString)
                 .queryParam("page", 0)
                 .queryParam("size", 10)
@@ -281,11 +273,12 @@ class TasksCompositeControllerTest extends BaseGatewayFilterIntegrationTest {
                         .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .withBody(objectMapper.writeValueAsString(List.of(userResponse)))));
 
-        applyDefaultBehaviorToFilter(gatewayFilters);
+        Mockito.when(userPermissionService.getUserPermission(Mockito.any(), Mockito.any()))
+                .thenReturn(Mono.just(userPermission));
 
         given()
                 .contentType(ContentType.JSON)
-                .header(USER_ID_HEADER_NAME, userId)
+                .header(AUTHORIZATION, "Bearer " + generateToken(userId, "login"))
                 .header(USER_PERMISSIONS_HEADER_NAME, userPermissionString)
                 .body(request)
                 .when()
@@ -349,11 +342,12 @@ class TasksCompositeControllerTest extends BaseGatewayFilterIntegrationTest {
                         .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .withBody(objectMapper.writeValueAsString(List.of(userResponse)))));
 
-        applyDefaultBehaviorToFilter(gatewayFilters);
+        Mockito.when(userPermissionService.getUserPermission(Mockito.any(), Mockito.any()))
+                .thenReturn(Mono.just(userPermission));
 
         given()
                 .contentType(ContentType.JSON)
-                .header(USER_ID_HEADER_NAME, userId)
+                .header(AUTHORIZATION, "Bearer " + generateToken(userId, "login"))
                 .header(USER_PERMISSIONS_HEADER_NAME, userPermissionString)
                 .body(request)
                 .when()
@@ -390,11 +384,12 @@ class TasksCompositeControllerTest extends BaseGatewayFilterIntegrationTest {
                 .withHeader(USER_PERMISSIONS_HEADER_NAME, equalTo(userPermissionString))
                 .willReturn(aResponse().withStatus(204)));
 
-        applyDefaultBehaviorToFilter(gatewayFilters);
+        Mockito.when(userPermissionService.getUserPermission(Mockito.any(), Mockito.any()))
+                .thenReturn(Mono.just(userPermission));
 
         given()
                 .contentType(ContentType.JSON)
-                .header(USER_ID_HEADER_NAME, userId)
+                .header(AUTHORIZATION, "Bearer " + generateToken(userId, "login"))
                 .header(USER_PERMISSIONS_HEADER_NAME, userPermissionString)
                 .when()
                 .delete("/api/composite/organizations/{organizationId}/tasks/{taskId}", organizationId, taskId)
@@ -402,19 +397,6 @@ class TasksCompositeControllerTest extends BaseGatewayFilterIntegrationTest {
                 .log().all()
                 .assertThat()
                 .statusCode(HttpStatus.NO_CONTENT.value());
-    }
-
-    private void applyDefaultBehaviorToFilter(List<GatewayFilter> gatewayFilters) {
-        for (GatewayFilter gatewayFilter : gatewayFilters) {
-            Mockito.when(gatewayFilter.filter(Mockito.any(), Mockito.any()))
-                    .thenAnswer(invocation -> {
-                        GatewayFilterChain chain = invocation.getArgument(1);
-                        ServerWebExchange exchange = invocation.getArgument(0);
-
-                        return chain.filter(exchange);
-                    });
-        }
-
     }
 
 }
