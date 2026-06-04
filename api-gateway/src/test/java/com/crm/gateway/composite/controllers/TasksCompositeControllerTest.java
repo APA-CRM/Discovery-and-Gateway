@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -319,6 +320,7 @@ class TasksCompositeControllerTest extends BaseGatewayFilterIntegrationTest {
         taskResponse.setTitle("Test");
         taskResponse.setAssignedTo(taskUserId);
         taskResponse.setCreatedBy(taskUserId);
+        taskResponse.setUpdatedAt(Instant.now());
 
         wireMock.stubFor(put(urlEqualTo("/api/organizations/%d/tasks/%s".formatted(organizationId, taskId)))
                 .withRequestBody(matchingJsonPath("$.title"))
@@ -359,7 +361,8 @@ class TasksCompositeControllerTest extends BaseGatewayFilterIntegrationTest {
                 .body("id", is(taskId.toString()))
                 .body("title", is(taskResponse.getTitle()))
                 .body("assignedTo", notNullValue())
-                .body("createdBy", notNullValue());
+                .body("createdBy", notNullValue())
+                .body("updatedAt", is(taskResponse.getUpdatedAt().toString()));
 
     }
 

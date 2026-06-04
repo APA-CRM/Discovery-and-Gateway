@@ -6,6 +6,7 @@ import io.restassured.RestAssured;
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
@@ -20,7 +21,8 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 public abstract class BaseIntegrationTest {
 
     protected static WireMockServer wireMock;
-    protected final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    protected ObjectMapper objectMapper;
     @LocalServerPort
     private int localServerPort;
 
